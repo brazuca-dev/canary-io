@@ -1,0 +1,36 @@
+services:
+    deno_api:
+        container_name: api
+        image: denoland/deno:alpine
+        user: deno
+        volumes:
+            - .:/app
+            - deno-cache:/deno-dir
+        working_dir: /app
+        ports:
+            - "8000:8000"
+        environment:
+              - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+              - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+              - AWS_REGION=${AWS_REGION}
+              - S3_ENDPOINT=${S3_ENDPOINT}
+              - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+        command: run --allow-net --allow-env --allow-read --allow-sys --watch main.ts
+        depends_on:
+            - localstack_storage
+
+    localstack_storage:
+        container_name: storage
+        image: localstack/localstack
+        ports:
+            - "127.0.0.1:4566:4566"            # LocalStack Gateway
+            - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+        environment:
+            - DEBUG=1
+            - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+        volumes:
+              - "./ls-data:/var/lib/localstack"
+              - "/var/run/docker.sock:/var/run/docker.sock"
+
+volumes:
+    deno-cache:
