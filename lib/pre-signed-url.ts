@@ -7,6 +7,7 @@ interface GetPreSignedUrlProps {
   key: string;
 }
 
+const EXPIRES_IN_ONE_MINUTE = 60;
 const BUCKET_NAME = Deno.env.get("S3_BUCKET_NAME");
 
 export const getPreSignedUrl = {
@@ -18,12 +19,12 @@ export const getPreSignedUrl = {
       Bucket: BUCKET_NAME,
       ContentType: contentType,
     });
-    return getSignedUrl(client, command, { expiresIn: 3600 });
+    return getSignedUrl(client, command, { expiresIn: EXPIRES_IN_ONE_MINUTE });
   },
   // Method to generate a pre-signed URL for downloading a file from S3
   toGet: ({ key }: Pick<GetPreSignedUrlProps, 'key'>) => {
     const client = s3();
     const command = new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key });
-    return getSignedUrl(client, command, { expiresIn: 3600 });
+    return getSignedUrl(client, command, { expiresIn: EXPIRES_IN_ONE_MINUTE });
   },
 };

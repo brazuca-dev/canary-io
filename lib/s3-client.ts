@@ -1,12 +1,12 @@
 import { S3Client } from "@aws-sdk/client-s3";
 
-const ONE_HOUR = 3_600_000;
+const ONE_HOUR_IN_MILLISECONDS = 3_600_000;
 
 export const s3 = () => {
   let client;
 
   if (!client) {
-    const expiration = new Date(Date.now() + ONE_HOUR);
+    const expiration = new Date(Date.now() + ONE_HOUR_IN_MILLISECONDS);
 
     client = new S3Client({
       endpoint: Deno.env.get("S3_ENDPOINT"),
