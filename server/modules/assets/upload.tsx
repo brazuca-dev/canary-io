@@ -8,7 +8,7 @@ const upload = new Hono();
 
 upload.get("/", (c: Context) => c.html(<UploadPage />));
 
-upload.get('/static/upload-files.js', serveStatic({ path: './static/upload-files.js' }))
+upload.get('/static/upload-files.js', serveStatic({ path: './server/static/upload-files.js' }))
 
 upload.post("/upload", async (c: Context) => {
   const { file: fileMetaData } = await c.req.json<{

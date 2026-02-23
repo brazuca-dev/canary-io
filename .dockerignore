@@ -1,0 +1,9 @@
+.env.example
+.dockerignore
+.docker-compose.yml
+README.md
+
+.zed/
+.vscode/
+.cursor/
+.localstack/

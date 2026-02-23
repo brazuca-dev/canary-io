@@ -12,6 +12,6 @@ view.get("/view/:key", async (c: Context) => {
   return c.html(<ViewAssetUploadedPage assetUrl={preSignedUrl} />);
 });
 
-view.get("/static/file-element.js", serveStatic({ path: "./static/file-element.js" }));
+view.get("/static/file-element.js", serveStatic({ path: "./server/static/file-element.js" }));
 
 export { view as ViewRoute };

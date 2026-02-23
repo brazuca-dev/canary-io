@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import { serveStatic } from 'hono/deno'
+import { logger } from "hono/logger";
 import { UploadRoute } from "./modules/assets/upload.tsx";
 import { ViewRoute } from "./modules/assets/view.tsx";
 
 const app = new Hono();
 
-app.use('/static/', serveStatic({ root: './' }))
+app.use(logger())
 
 app.route("/", UploadRoute);
 app.route("/", ViewRoute);
