@@ -5,11 +5,13 @@ class FileElement extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["src", "alt", "width", "height"];
+        return ["src", "alt", "type", "width", "height"];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`Attribute ${name} changed from ${oldValue} to ${newValue}`);
+        console.log(
+            `Attribute ${name} changed from ${oldValue} to ${newValue}`,
+        );
         this.render();
     }
 
@@ -24,6 +26,7 @@ class FileElement extends HTMLElement {
     render() {
         const src = this.getAttribute("src") || "";
         const alt = this.getAttribute("alt") || "";
+        const type = this.getAttribute("type") || "image";
         const width = this.getAttribute("width") || "auto";
         const height = this.getAttribute("height") || "auto";
 
@@ -39,10 +42,13 @@ class FileElement extends HTMLElement {
             border-radius: 12px;
             overflow: hidden;
 
-            & > img {
+            & > img, video {
               object-fit: cover;
               width: 100%;
               height: 100%;
+            }
+
+            & > img {
               pointer-events: none;
             }
 
@@ -59,9 +65,23 @@ class FileElement extends HTMLElement {
           }
         </style>
         <div class="mask">
-          <img src="${src}" alt="${alt}" width="${width}" height="${height}" />
+          ${
+              type === "image"
+                  ? `<img src="${src}" alt="${alt}" width="${width}" height="${height}" />`
+                  : `<video autoplay loop controls>
+                <source src="${src}" type="video/${type}">
+                Your browser does not support the video tag.
+              </video>`
+          }
         </div>
     `;
+        // Prevent download
+        this._shadow
+            .querySelector("video")
+            ?.setAttribute(
+                "controlsList",
+                "nodownload nofullscreen noremoteplayback",
+            );
     }
 }
 

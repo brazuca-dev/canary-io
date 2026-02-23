@@ -9,7 +9,7 @@ export const UploadPage = () => (
           required
           name="photo"
           type="file"
-          accept="image/*"
+          accept="image/*, video/*"
           placeholder="Escolha uma imagem"
         />
         <br />

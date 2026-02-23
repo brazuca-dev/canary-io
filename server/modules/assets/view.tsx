@@ -7,9 +7,11 @@ const view = new Hono();
 
 view.get("/view/:key", async (c: Context) => {
   const key = c.req.param('key');
+  const type = key.split('.').pop();
   
   const preSignedUrl = await getPreSignedUrl.toGet({ key });
-  return c.html(<ViewAssetUploadedPage assetUrl={preSignedUrl} />);
+  
+  return c.html(<ViewAssetUploadedPage assetUrl={preSignedUrl} type={type} />);
 });
 
 view.get("/static/file-element.js", serveStatic({ path: "./server/static/file-element.js" }));
