@@ -1,3 +1,5 @@
 .env
 .zed
-ls-data
+.ls-data
+**/*.pem
+**/tmp

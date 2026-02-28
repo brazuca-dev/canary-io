@@ -1,3 +1,25 @@
+const EXTENSION_MAP = {
+  // Imagens
+  "jpg": "image",
+  "jpeg": "image",
+  "png": "image",
+  "gif": "image",
+  "webp": "image",
+  "avif": "image",
+  "svg": "image",
+  // Vídeos
+  "mp4": "video",
+  "mkv": "video",
+  "webm": "video",
+  "mov": "video",
+  "avi": "video",
+};
+
+function getMediaType(extension) {
+  if (!extension) return "unknown";
+  return EXTENSION_MAP[extension] || "unknown";
+}
+
 class FileElement extends HTMLElement {
     constructor() {
         super();
@@ -26,7 +48,7 @@ class FileElement extends HTMLElement {
     render() {
         const src = this.getAttribute("src") || "";
         const alt = this.getAttribute("alt") || "";
-        const type = this.getAttribute("type") || "image";
+        const type = getMediaType(this.getAttribute("type"));
         const width = this.getAttribute("width") || "auto";
         const height = this.getAttribute("height") || "auto";
 
@@ -53,7 +75,7 @@ class FileElement extends HTMLElement {
             }
 
             &::after {
-              content: "*";
+              content: "";
               position: absolute;
               top: 0;
               left: 0;

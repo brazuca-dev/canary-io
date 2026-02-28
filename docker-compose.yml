@@ -5,14 +5,16 @@ services:
         ports:
             - "8000:8000"
         environment:
-              - TZ=America/Sao_Paulo
-              - AWS_REGION=${AWS_REGION}
-              - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-              - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-              - S3_ENDPOINT=${S3_ENDPOINT}
-              - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+            - TZ=America/Sao_Paulo
+            - AWS_REGION=${AWS_REGION}
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT}
+            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PORT=${REDIS_PORT}
         working_dir: /app
-        command: run --allow-net --allow-env --allow-read --allow-sys --watch ./server/main.ts
+        command: run --allow-net --allow-env --allow-read --allow-sys --watch-hmr ./server/main.ts
         volumes:
             - .:/app
             - deno-cache:/deno-dir
@@ -25,22 +27,48 @@ services:
         container_name: storage
         image: localstack/localstack
         ports:
-            - "127.0.0.1:4566:4566"            # LocalStack Gateway
-            - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+            - "127.0.0.1:4566:4566" # LocalStack Gateway
+            - "127.0.0.1:4510-4559:4510-4559" # external services port range
         environment:
-            - DEBUG=1
-            - LS_LOG=trace
+            # - DEBUG=1
+            # - LS_LOG=trace
             - TZ=America/Sao_Paulo
             - S3_SKIP_SIGNATURE_VALIDATION=0
             - S3_BUCKET_NAME=${S3_BUCKET_NAME}
             - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
             - API_CORS_ORIGIN=${API_CORS_ORIGIN}
         volumes:
-              - "./.localstack/:/etc/localstack/init/ready.d"
-              - "./ls-data:/var/lib/localstack"
-              - "/var/run/docker.sock:/var/run/docker.sock"
-              - /etc/localtime:/etc/localtime:ro
-              - /etc/timezone:/etc/timezone:ro
+            - "./.localstack/:/etc/localstack/init/ready.d"
+            - "./.ls-data:/var/lib/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - /etc/localtime:/etc/localtime:ro
+            - /etc/timezone:/etc/timezone:ro
+
+    redis:
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+
+    c2pa_worker:
+        restart: always
+        build:
+            context: .
+            dockerfile: c2pa.Dockerfile
+        environment:
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PORT=${REDIS_PORT}
+            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - AWS_REGION=${AWS_REGION}
+            - S3_INTERNAL_ENDPOINT=${S3_INTERNAL_ENDPOINT}
+        volumes:
+            - ./workers/c2pa:/worker/c2pa
+            - ./common:/common
+            - deno-cache:/deno_dir
+        depends_on:
+            - redis
+            - localstack_storage
 
 volumes:
     deno-cache:

@@ -1,13 +1,50 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@db/redis@0.40": "0.40.0",
     "jsr:@hono/hono@^4.11.10": "4.11.10",
+    "jsr:@std/async@1": "1.2.0",
+    "jsr:@std/bytes@1": "1.0.6",
+    "jsr:@std/bytes@^1.0.2-rc.3": "1.0.6",
+    "jsr:@std/collections@1": "1.1.6",
+    "jsr:@std/io@0.224.5": "0.224.5",
+    "jsr:@std/random@0.1.0": "0.1.0",
     "npm:@aws-sdk/client-s3@^3.994.0": "3.994.0",
-    "npm:@aws-sdk/s3-request-presigner@^3.995.0": "3.995.0"
+    "npm:@aws-sdk/s3-request-presigner@^3.995.0": "3.995.0",
+    "npm:cluster-key-slot@1.1.0": "1.1.0"
   },
   "jsr": {
+    "@db/redis@0.40.0": {
+      "integrity": "98bef146ad2d1262c0a5388c32e9d62e83ada410c9cc49cee3868085037e930b",
+      "dependencies": [
+        "jsr:@std/async",
+        "jsr:@std/bytes@1",
+        "jsr:@std/collections",
+        "jsr:@std/io",
+        "jsr:@std/random",
+        "npm:cluster-key-slot"
+      ]
+    },
     "@hono/hono@4.11.10": {
       "integrity": "a5a6dac87ab5a8bcf3f92aeaca22417128d584c2732860c20bbf6fdb3cafbcc5"
+    },
+    "@std/async@1.2.0": {
+      "integrity": "c059c6f6d95ca7cc012ae8e8d7164d1697113d54b0b679e4372b354b11c2dee5"
+    },
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
+    "@std/collections@1.1.6": {
+      "integrity": "b458160ce65ea5ad35da05d0a5cbee4b583677c8b443a10d7beb0c4ac63f2baa"
+    },
+    "@std/io@0.224.5": {
+      "integrity": "cb84fe655d1273fca94efcff411465027a8b0b4225203f19d6ee98d9c8920a2d",
+      "dependencies": [
+        "jsr:@std/bytes@^1.0.2-rc.3"
+      ]
+    },
+    "@std/random@0.1.0": {
+      "integrity": "70a006be0ffb77d036bab54aa8ae6bd0119ba77ace0f2f56f63273d4262a5667"
     }
   },
   "npm": {
@@ -1051,6 +1088,9 @@
     "bowser@2.14.1": {
       "integrity": "sha512-tzPjzCxygAKWFOJP011oxFHs57HzIhOEracIgAePE4pqB3LikALKnSzUyU4MGs9/iCEUuHlAJTjTc5M+u7YEGg=="
     },
+    "cluster-key-slot@1.1.0": {
+      "integrity": "sha512-2Nii8p3RwAPiFwsnZvukotvow2rIHM+yQ6ZcBXGHdniadkYGZYiGmkHJIbZPIV9nfv7m/U1IPMVVcAhoWFeklw=="
+    },
     "fast-xml-parser@5.3.6": {
       "integrity": "sha512-QNI3sAvSvaOiaMl8FYU4trnEzCwiRr8XMWgAHzlrWpTSj+QaCSvOf1h82OEP1s4hiAXhnbXSyFWCf4ldZzZRVA==",
       "dependencies": [
@@ -1067,6 +1107,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@db/redis@0.40",
       "jsr:@hono/hono@^4.11.10",
       "npm:@aws-sdk/client-s3@^3.994.0",
       "npm:@aws-sdk/s3-request-presigner@^3.995.0"

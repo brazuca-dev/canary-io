@@ -2,7 +2,7 @@ import { Layout } from "./layout.tsx";
 
 interface ViewAssetUploadedPageProps {
   assetUrl: string;
-  type: 'image' | 'video';
+  type: string;
 }
 
 export const ViewAssetUploadedPage = ({ assetUrl, type }: ViewAssetUploadedPageProps) =>

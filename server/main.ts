@@ -5,7 +5,7 @@ import { ViewRoute } from "./modules/assets/view.tsx";
 
 const app = new Hono();
 
-app.use(logger())
+app.use(logger());
 
 app.route("/", UploadRoute);
 app.route("/", ViewRoute);
