@@ -56,11 +56,10 @@ while (true) {
     await putFileToCloudStorage(task.assetId, signedFileData);
 
     console.log(`Asset "${task.assetId}" injected C2PA manifest.json`);
+    removeTempFile(inputFilePath);
+    removeTempFile(outputFilePath);
   } catch (e) {
     const error = e instanceof Error ? e : new Error(String(e));
     console.error(`Error processing asset "${task.assetId}": ${error.message}`);
-  } finally {
-    // removeTempFile(tmpOriginalFilePath);
-    // removeTempFile(tmpC2PAInjectedFilePath);
   }
 }

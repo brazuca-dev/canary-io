@@ -6,4 +6,3 @@ export const redis = await connect({
 });
 
 export const C2PA_INJECTION_QUEUE = "c2pa_injection_queue";
-export const C2PA_FAILED_QUEUE = "c2pa_failed_queue";

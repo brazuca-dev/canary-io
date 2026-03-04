@@ -1,4 +1,4 @@
-import { Layout } from "./layout.tsx";
+import { Layout } from "../layout.tsx";
 
 export const UploadPage = () => (
   <Layout title="Upload Asset">
@@ -9,7 +9,7 @@ export const UploadPage = () => (
           required
           name="photo"
           type="file"
-          accept="image/*, video/*"
+          accept="image/*"
           placeholder="Escolha uma imagem"
         />
         <br />

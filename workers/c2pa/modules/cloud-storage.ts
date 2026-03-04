@@ -1,6 +1,5 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "../../../common/s3-client.ts";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = s3(Deno.env.get("S3_INTERNAL_ENDPOINT") || "");
 const BUCKET_NAME = Deno.env.get("S3_BUCKET_NAME");

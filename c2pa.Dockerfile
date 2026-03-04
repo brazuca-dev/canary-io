@@ -11,8 +11,6 @@ RUN chmod +x /usr/local/bin/c2patool
 
 WORKDIR /worker/c2pa
 
-COPY deno.json /worker/deno.json
-COPY deno.lock /worker/deno.lock
 COPY common/ /common
 COPY workers/c2pa/ /worker/c2pa
 

@@ -1,40 +1,39 @@
-const EXTENSION_MAP = {
-  // Imagens
-  "jpg": "image",
-  "jpeg": "image",
-  "png": "image",
-  "gif": "image",
-  "webp": "image",
-  "avif": "image",
-  "svg": "image",
-  // Vídeos
-  "mp4": "video",
-  "mkv": "video",
-  "webm": "video",
-  "mov": "video",
-  "avi": "video",
-};
+import { createC2pa } from "https://cdn.jsdelivr.net/npm/@contentauth/c2pa-web@0.6.0/+esm";
 
-function getMediaType(extension) {
-  if (!extension) return "unknown";
-  return EXTENSION_MAP[extension] || "unknown";
-}
+const wasmSrc =
+    "https://cdn.jsdelivr.net/npm/@contentauth/c2pa-web@0.6.0/dist/resources/c2pa_bg.wasm";
 
 class FileElement extends HTMLElement {
     constructor() {
         super();
         this._shadow = this.attachShadow({ mode: "closed" });
     }
+    
+    async checkImageProvenance(imageUrl, type) {
+        const c2pa = await createC2pa({
+            wasmSrc,
+            trustAnchors: ``,
+            embedCheckNode: true,
+        });
 
-    static get observedAttributes() {
-        return ["src", "alt", "type", "width", "height"];
+        const file = await (await fetch(imageUrl)).blob();
+
+        try {
+            // Lê o manifesto da imagem
+            const reader = await c2pa.reader.fromBlob(type, file);
+
+            if (reader) {
+                const activeManifest = await reader.activeManifest();
+                console.dir(activeManifest);
+                reader.free();
+            }
+        } catch (err) {
+            console.error("Error to read C2PA:", err);
+        }
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        console.log(
-            `Attribute ${name} changed from ${oldValue} to ${newValue}`,
-        );
-        this.render();
+    static get observedAttributes() {
+        return ["src", "alt", "width", "height"];
     }
 
     connectedCallback() {
@@ -45,12 +44,13 @@ class FileElement extends HTMLElement {
         );
     }
 
-    render() {
+    async render() {
         const src = this.getAttribute("src") || "";
         const alt = this.getAttribute("alt") || "";
-        const type = getMediaType(this.getAttribute("type"));
         const width = this.getAttribute("width") || "auto";
         const height = this.getAttribute("height") || "auto";
+
+        await this.checkImageProvenance(src, this.getAttribute("type"));
 
         this._shadow.innerHTML = `
         <style>
@@ -64,16 +64,13 @@ class FileElement extends HTMLElement {
             border-radius: 12px;
             overflow: hidden;
 
-            & > img, video {
+            & > img {
               object-fit: cover;
               width: 100%;
               height: 100%;
-            }
-
-            & > img {
               pointer-events: none;
             }
-
+            
             &::after {
               content: "";
               position: absolute;
@@ -85,25 +82,44 @@ class FileElement extends HTMLElement {
               pointer-events: none;
             }
           }
+
+          .cr-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border-radius: 50%;
+            padding: 8px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            z-index: 2;
+          }
+
+          .cr-content {
+            background: #fff;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            z-index: 5;
+          }
         </style>
         <div class="mask">
-          ${
-              type === "image"
-                  ? `<img src="${src}" alt="${alt}" width="${width}" height="${height}" />`
-                  : `<video autoplay loop controls>
-                <source src="${src}" type="video/${type}">
-                Your browser does not support the video tag.
-              </video>`
-          }
+          <div>
+            <button type="button" popovertarget="c2pa_info" class="cr-badge">
+              CR
+            </button>
+
+            <div id="c2pa_info" class="cr-content" popover>
+              hello world
+            </div>
+          </div>
+          
+          <img src="${src}" alt="${alt}" width="${width}" height="${height}" />
         </div>
     `;
-        // Prevent download
-        this._shadow
-            .querySelector("video")
-            ?.setAttribute(
-                "controlsList",
-                "nodownload nofullscreen noremoteplayback",
-            );
     }
 }
 

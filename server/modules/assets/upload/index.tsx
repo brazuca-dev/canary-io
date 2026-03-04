@@ -1,9 +1,9 @@
 import { Context, Hono } from "hono";
-import { UploadPage } from "../ui/upload.tsx";
-import { getPreSignedUrl } from "../../lib/pre-signed-url.ts";
+import { UploadPage } from "./ui.tsx";
+import { getPreSignedUrl } from "../../../lib/pre-signed-url.ts";
 import { hash } from "node:crypto";
 import { serveStatic } from "hono/deno";
-import { createC2PATask, pushC2PATaskToQueue } from "../../../common/c2pa-task.ts";
+import { createC2PATask, pushC2PATaskToQueue } from "../../../../common/c2pa-task.ts";
 
 interface PostUploadVariables { key: string }
 
