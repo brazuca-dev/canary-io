@@ -1,15 +1,14 @@
 {
     "imports": {
-        "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.994.0",
-        "@aws-sdk/s3-request-presigner": "npm:@aws-sdk/s3-request-presigner@^3.995.0",
-        "@db/redis": "jsr:@db/redis@^0.40.0",
-        "hono": "jsr:@hono/hono@^4.11.10"
-    },
-    "tasks": {
-        "start": "deno run --allow-net main.ts"
+        "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.994.0"
     },
     "compilerOptions": {
-        "jsx": "precompile",
-        "jsxImportSource": "hono/jsx"
-    }
+        "strict": true,
+        "noImplicitAny": true
+    },
+    "workspace": [
+      "./server",
+      "./workers/c2pa",
+      "./workers/optimizer"
+    ]
 }

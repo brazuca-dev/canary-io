@@ -16,5 +16,4 @@ awslocal s3api put-bucket-cors --bucket ${S3_BUCKET_NAME} --cors-configuration "
   ]
 }"
 
-
 echo "########### [LocalStack] S3 initialization completed ###########"

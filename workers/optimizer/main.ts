@@ -1,8 +1,8 @@
 import sharp from "sharp";
 import { Readable } from "node:stream";
 
-const inputFile = 'test/input/boots.jpeg';
-const outputFile = 'test/output/boots_instagram_tt.webp';
+const inputFile = 'tmp/input/2333.jpg';
+const outputFile = 'tmp/output/2333_instagram.webp';
 const file = await Deno.open(inputFile)
 
 const denoStream = file.readable

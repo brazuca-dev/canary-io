@@ -1,13 +1,10 @@
 import { Context, Hono } from "hono";
 import { UploadPage } from "./ui.tsx";
-import { getPreSignedUrl } from "../../../lib/pre-signed-url.ts";
+import { getPreSignedUrl } from "../pre-signed-url.ts";
 import { hash } from "node:crypto";
 import { serveStatic } from "hono/deno";
-import { createC2PATask, pushC2PATaskToQueue } from "../../../../common/c2pa-task.ts";
 
-interface PostUploadVariables { key: string }
-
-const upload = new Hono<{ Variables: PostUploadVariables }>();
+const upload = new Hono();
 
 upload.get("/", (c: Context) => c.html(<UploadPage />));
 upload.get(
@@ -15,16 +12,9 @@ upload.get(
   serveStatic({ path: "./server/static/upload-files.js" }),
 );
 
-upload.use('/upload', async (c, next) => {
-  await next();
-  
-  const key = c.get('key')
-  const c2paTask = createC2PATask(key)
-  await pushC2PATaskToQueue(c2paTask);
-});
 upload.post("/upload", async (c: Context) => {
-  const { file: fileMetaData } = await c.req.json<{
-    file: {
+  const { fileMetaData } = await c.req.json<{
+    fileMetaData: {
       type: string;
       name: string;
       lastModified: string;
@@ -36,7 +26,6 @@ upload.post("/upload", async (c: Context) => {
     `${fileMetaData.name}${fileMetaData.lastModified}`,
   );
   const extension = fileMetaData.type.split("/").pop() || "txt";
-
   const key = `${hashName}.${extension}`;
 
   const preSignedUrl = await getPreSignedUrl.toPost({
@@ -44,7 +33,6 @@ upload.post("/upload", async (c: Context) => {
     key: key,
   });
 
-  c.set('key', key);
   return c.json({ preSignedUrl, key });
 });
 

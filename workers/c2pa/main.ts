@@ -1,8 +1,3 @@
-import {
-  getNextC2PATaskFromQueue,
-  pushC2PATaskToQueue,
-  updateC2PATaskAttempts,
-} from "../../common/c2pa-task.ts";
 import { injectC2PAMetadata } from "./modules/c2pa-cli-tool.ts";
 import {
   createTempFile,
@@ -14,12 +9,11 @@ import {
   putFileToCloudStorage,
 } from "./modules/cloud-storage.ts";
 
-const MAX_ATTEMPTS = 5;
 const TEMP_FILES_DIR = "tmp/files";
 console.log("🚀 Worker waiting for tasks...");
 
 while (true) {
-  const task = await getNextC2PATaskFromQueue();
+  const task = null;
   if (!task) continue;
 
   const manifestPath = 'tmp/manifest/c2pa.json';
@@ -30,19 +24,6 @@ while (true) {
     // 1. Get image from S3
     const file = await getFileFromCloudStorage(task.assetId);
 
-    if (!file) {
-      if (task.attempts >= MAX_ATTEMPTS) {
-        console.warn(
-          `Asset ${task.assetId} not available. Maximum attempts reached.`,
-        );
-        continue;
-      }
-      const taskUpdated = updateC2PATaskAttempts(task);
-      await pushC2PATaskToQueue(taskUpdated);
-
-      console.warn(`Asset ${task.assetId} not available. Scheduled for retry.`);
-      continue;
-    }
     // 2. Write image to local file system
     await createTempFile(inputFilePath, file);
     // 3. Inject C2PA metadata

@@ -13,6 +13,7 @@ WORKDIR /worker/c2pa
 
 COPY common/ /common
 COPY workers/c2pa/ /worker/c2pa
+COPY deno.json /deno.json
 
 # Permissões necessárias:
 # --allow-run (c2pa-tool), --allow-net (redis), --allow-read/write (arquivos)
