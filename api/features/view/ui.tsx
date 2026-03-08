@@ -2,11 +2,10 @@ import { Layout } from "../layout.tsx";
 
 interface ViewAssetUploadedPageProps {
   assetUrl: string;
-  type: string;
 }
 
 export const ViewAssetUploadedPage = (
-  { assetUrl, type }: ViewAssetUploadedPageProps,
+  { assetUrl }: ViewAssetUploadedPageProps,
 ) => (
   <Layout title="View Uploaded Asset">
     <script src="/static/file-element.js" type="module"></script>
@@ -16,7 +15,7 @@ export const ViewAssetUploadedPage = (
       <p>
         View uploaded asset access: <a href={assetUrl}>here</a>
       </p>
-      <file-element src={assetUrl} alt="Uploaded Asset" type={type} />
+      <file-element src={assetUrl} alt="Uploaded Asset" />
     </div>
   </Layout>
 );

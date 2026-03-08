@@ -1,7 +1,9 @@
 services:
     deno_api:
         container_name: api
-        image: denoland/deno:alpine
+        build:
+            context: ./server
+            dockerfile: Dockerfile
         ports:
             - "8000:8000"
         environment:
@@ -11,8 +13,6 @@ services:
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
             - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT}
             - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-        working_dir: /app
-        command: run --allow-net --allow-env --allow-read --allow-sys --watch-hmr ./server/main.ts
         volumes:
             - ./server:/app
             - ./common:/common
@@ -20,23 +20,21 @@ services:
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
         depends_on:
-            - localstack_storage
+            - localstack
 
-    localstack_storage:
+    localstack:
         container_name: storage
         image: localstack/localstack
         ports:
             - "127.0.0.1:4566:4566" # LocalStack Gateway
             - "127.0.0.1:4510-4559:4510-4559" # external services port range
         environment:
-            # - DEBUG=1
-            # - LS_LOG=trace
             - TZ=America/Sao_Paulo
             - S3_SKIP_SIGNATURE_VALIDATION=0
             - S3_BUCKET_NAME=${S3_BUCKET_NAME}
             - API_CORS_ORIGIN=${API_CORS_ORIGIN}
         volumes:
-            - "./scrípts/localstack/s3.sh:/etc/localstack/init/ready.d"
+            - "./scrípts/localstack:/etc/localstack/init/ready.d"
             - "./.ls-data:/var/lib/localstack"
             - "/var/run/docker.sock:/var/run/docker.sock"
             - /etc/localtime:/etc/localtime:ro
@@ -45,8 +43,8 @@ services:
     c2pa_worker:
         restart: always
         build:
-            context: .
-            dockerfile: c2pa.Dockerfile
+            context: ./workers/c2pa
+            dockerfile: Dockerfile
         environment:
             - S3_BUCKET_NAME=${S3_BUCKET_NAME}
             - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
@@ -58,7 +56,15 @@ services:
             - ./common:/common
             - deno-cache:/deno_dir
         depends_on:
-            - localstack_storage
-    
+            - deno_api
+
+    optimizer_worker:
+        restart: always
+        build:
+            context: ./workers/optimizer
+            dockerfile: Dockerfile
+        depends_on:
+            - deno_api
+
 volumes:
     deno-cache:

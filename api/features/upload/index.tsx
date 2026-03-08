@@ -1,6 +1,6 @@
 import { Context, Hono } from "hono";
 import { UploadPage } from "./ui.tsx";
-import { getPreSignedUrl } from "../pre-signed-url.ts";
+import { getPreSignedUrl } from "../../lib/pre-signed-url.ts";
 import { hash } from "node:crypto";
 import { serveStatic } from "hono/deno";
 
@@ -26,7 +26,7 @@ upload.post("/upload", async (c: Context) => {
     `${fileMetaData.name}${fileMetaData.lastModified}`,
   );
   const extension = fileMetaData.type.split("/").pop() || "txt";
-  const key = `${hashName}.${extension}`;
+  const key = `original/${hashName}.${extension}`;
 
   const preSignedUrl = await getPreSignedUrl.toPost({
     contentType: fileMetaData.type,

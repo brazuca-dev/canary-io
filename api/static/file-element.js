@@ -19,7 +19,6 @@ class FileElement extends HTMLElement {
         const file = await (await fetch(imageUrl)).blob();
 
         try {
-            // Lê o manifesto da imagem
             const reader = await c2pa.reader.fromBlob(type, file);
 
             if (reader) {

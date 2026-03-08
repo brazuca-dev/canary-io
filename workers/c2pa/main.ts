@@ -1,46 +1,8 @@
-import { injectC2PAMetadata } from "./modules/c2pa-cli-tool.ts";
-import {
-  createTempFile,
-  readTempFile,
-  removeTempFile,
-} from "./modules/tmp-file.ts";
-import {
-  getFileFromCloudStorage,
-  putFileToCloudStorage,
-} from "./modules/cloud-storage.ts";
+import { } from "@storage"
+import { } from "@queue-message"
+import { } from "@contentauth/c2pa-node"
 
-const TEMP_FILES_DIR = "tmp/files";
-console.log("🚀 Worker waiting for tasks...");
-
-while (true) {
-  const task = null;
-  if (!task) continue;
-
-  const manifestPath = 'tmp/manifest/c2pa.json';
-  const inputFilePath = `${TEMP_FILES_DIR}/original/${task.assetId}`;
-  const outputFilePath = `${TEMP_FILES_DIR}/c2pa_injected/${task.assetId}`;
-
-  try {
-    // 1. Get image from S3
-    const file = await getFileFromCloudStorage(task.assetId);
-
-    // 2. Write image to local file system
-    await createTempFile(inputFilePath, file);
-    // 3. Inject C2PA metadata
-    await injectC2PAMetadata(
-      inputFilePath,
-      manifestPath,
-      outputFilePath,
-    );
-    // 4. Send injected C2PA image to S3
-    const signedFileData = await readTempFile(outputFilePath);
-    await putFileToCloudStorage(task.assetId, signedFileData);
-
-    console.log(`Asset "${task.assetId}" injected C2PA manifest.json`);
-    removeTempFile(inputFilePath);
-    removeTempFile(outputFilePath);
-  } catch (e) {
-    const error = e instanceof Error ? e : new Error(String(e));
-    console.error(`Error processing asset "${task.assetId}": ${error.message}`);
-  }
-}
+// 0. Listen for tasks
+// 1. Get image from S3
+// 2. Inject C2PA metadata
+// 3. Send injected C2PA image to S3 (contentauth/hash.extension)

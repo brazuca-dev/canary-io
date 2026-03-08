@@ -9,7 +9,7 @@ document
         const responseOfUploadRequest = await fetch("/upload", {
             method: "post",
             body: JSON.stringify({
-                file: {
+                fileMetaData: {
                     type: photo.type,
                     name: photo.name,
                     lastModified: photo.lastModified,
@@ -21,7 +21,7 @@ document
 
         const responseOfPresignedUrl = await fetch(preSignedUrl, {
             body: photo,
-            method: "PUT",
+            method: "put",
             headers: { "Content-Length": photo.size },
         });
 

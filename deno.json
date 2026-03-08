@@ -1,6 +1,9 @@
 {
     "imports": {
-        "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.994.0"
+        "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.994.0",
+        "@aws-sdk/client-sqs": "npm:@aws-sdk/client-sqs@^3.1004.0",
+        "@storage": "./common/s3-client.ts",
+        "@queue-message": "./common/sqs-client.ts"
     },
     "compilerOptions": {
         "strict": true,
