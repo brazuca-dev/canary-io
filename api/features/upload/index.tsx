@@ -9,7 +9,7 @@ const upload = new Hono();
 upload.get("/", (c: Context) => c.html(<UploadPage />));
 upload.get(
   "/static/upload-files.js",
-  serveStatic({ path: "./server/static/upload-files.js" }),
+  serveStatic({ path: "./static/upload-files.js" }),
 );
 
 upload.post("/upload", async (c: Context) => {
@@ -26,7 +26,7 @@ upload.post("/upload", async (c: Context) => {
     `${fileMetaData.name}${fileMetaData.lastModified}`,
   );
   const extension = fileMetaData.type.split("/").pop() || "txt";
-  const key = `original/${hashName}.${extension}`;
+  const key = `${hashName}/original.${extension}`;
 
   const preSignedUrl = await getPreSignedUrl.toPost({
     contentType: fileMetaData.type,

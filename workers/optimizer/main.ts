@@ -1,5 +1,5 @@
-import { } from "@storage"
-import { } from "@queue-message"
+import { s3 } from "@storage"
+import { sqs } from "@queue-message"
 import { } from "sharp"
 
 // 0. Listen for tasks

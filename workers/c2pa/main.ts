@@ -1,6 +1,5 @@
-import { } from "@storage"
-import { } from "@queue-message"
-import { } from "@contentauth/c2pa-node"
+import { s3 } from "@storage"
+import { sqs } from "@queue-message"
 
 // 0. Listen for tasks
 // 1. Get image from S3

@@ -6,13 +6,12 @@ const wasmSrc =
 class FileElement extends HTMLElement {
     constructor() {
         super();
-        this._shadow = this.attachShadow({ mode: "closed" });
     }
     
     async checkImageProvenance(imageUrl, type) {
         const c2pa = await createC2pa({
             wasmSrc,
-            trustAnchors: ``,
+            trustAnchors: await fetch("").then((r) => r.text()),
             embedCheckNode: true,
         });
 
@@ -38,20 +37,18 @@ class FileElement extends HTMLElement {
     connectedCallback() {
         this.render();
 
-        this._shadow.addEventListener("contextmenu", (event) =>
+        this.addEventListener("contextmenu", (event) =>
             event.preventDefault(),
         );
     }
 
-    async render() {
+    render() {
         const src = this.getAttribute("src") || "";
         const alt = this.getAttribute("alt") || "";
         const width = this.getAttribute("width") || "auto";
         const height = this.getAttribute("height") || "auto";
 
-        await this.checkImageProvenance(src, this.getAttribute("type"));
-
-        this._shadow.innerHTML = `
+        this.innerHTML = `
         <style>
           .mask {
             position: relative;
@@ -82,19 +79,6 @@ class FileElement extends HTMLElement {
             }
           }
 
-          .cr-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #fff;
-            border-radius: 50%;
-            padding: 8px 6px;
-            font-size: 12px;
-            font-weight: bold;
-            color: #000;
-            z-index: 2;
-          }
-
           .cr-content {
             background: #fff;
             border-radius: 5px;
@@ -105,18 +89,13 @@ class FileElement extends HTMLElement {
             z-index: 5;
           }
         </style>
-        <div class="mask">
-          <div>
-            <button type="button" popovertarget="c2pa_info" class="cr-badge">
-              CR
-            </button>
-
-            <div id="c2pa_info" class="cr-content" popover>
-              hello world
-            </div>
+        <div>
+          <div class="mask">
+            <img src="${src}" alt="${alt}" width="${width}" height="${height}" />
           </div>
-          
-          <img src="${src}" alt="${alt}" width="${width}" height="${height}" />
+          <div id="c2pa_info" class="cr-content">
+            hello world
+          </div>
         </div>
     `;
     }
