@@ -16,7 +16,7 @@ export const UploadPage = () => (
         <br />
         <button type="submit">Submit</button>
       </fieldset>
-      <script defer src="/static/upload-files.js"></script>
+      <script defer src="/content/upload-files.js"></script>
     </form>
   </Layout>
 );

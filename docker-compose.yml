@@ -16,6 +16,7 @@ services:
         volumes:
             - ./api:/api
             - ./common:/common
+            - /api/features/cdn/files
             - deno-cache:/deno-dir
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
@@ -44,6 +45,7 @@ services:
             - /etc/timezone:/etc/timezone:ro
 
     c2pa_worker:
+        container_name: contentauth
         restart: always
         build:
             context: ./
@@ -62,6 +64,7 @@ services:
             - deno_api
 
     optimizer_worker:
+        container_name: optimizer
         restart: always
         build:
             context: ./

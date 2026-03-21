@@ -11,7 +11,7 @@ class FileElement extends HTMLElement {
     async checkImageProvenance(imageUrl, type) {
         const c2pa = await createC2pa({
             wasmSrc,
-            trustAnchors: await fetch("").then((r) => r.text()),
+            trustAnchors: (await fetch("/content/trust-anchor.pem")).text(),
             embedCheckNode: true,
         });
 
@@ -31,7 +31,7 @@ class FileElement extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["src", "alt", "width", "height"];
+        return ["src", "alt", "width", "height", "type"];
     }
 
     connectedCallback() {
@@ -47,7 +47,10 @@ class FileElement extends HTMLElement {
         const alt = this.getAttribute("alt") || "";
         const width = this.getAttribute("width") || "auto";
         const height = this.getAttribute("height") || "auto";
+        const type = this.getAttribute("type") || "jpeg";
 
+        this.checkImageProvenance(src, type)
+        
         this.innerHTML = `
         <style>
           .mask {
@@ -88,8 +91,13 @@ class FileElement extends HTMLElement {
             color: #000;
             z-index: 5;
           }
+          
+          .container {
+            display: flex;
+            gap: 4rem;
+          }
         </style>
-        <div>
+        <div class="container">
           <div class="mask">
             <img src="${src}" alt="${alt}" width="${width}" height="${height}" />
           </div>

@@ -8,7 +8,7 @@ export const ViewAssetUploadedPage = (
   { assetUrl }: ViewAssetUploadedPageProps,
 ) => (
   <Layout title="View Uploaded Asset">
-    <script src="/static/file-element.js" type="module"></script>
+    <script src="/content/file-element.js" type="module"></script>
     <div>
       <h3>Asset Uploaded</h3>
       <hr />

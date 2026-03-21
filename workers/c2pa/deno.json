@@ -9,7 +9,8 @@
       "write": true,
       "net": true,
       "env": true,
-      "sys": true
+      "sys": true,
+      "ffi": true
     }
   },
   "imports": {

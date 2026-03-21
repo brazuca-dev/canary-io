@@ -20,12 +20,12 @@ interface SqsMessage {
     next_step: "warehouse_allocation"
 }
 
-export const sqs = (endpoint: string) =>
+export const sqs = () =>
   new SQSClient({
-    endpoint,
     region: Deno.env.get("AWS_REGION") || "",
     credentials: {
       accessKeyId: Deno.env.get("AWS_ACCESS_KEY_ID") || "",
       secretAccessKey: Deno.env.get("AWS_SECRET_ACCESS_KEY") || "",
-    }, 
+    },
+    forcePathStyle: true,
   });

@@ -10,7 +10,7 @@ document
             method: "post",
             body: JSON.stringify({
                 fileMetaData: {
-                    type: photo.type,
+                    type: photo.type.split('/')[1],
                     name: photo.name,
                     lastModified: photo.lastModified,
                 },

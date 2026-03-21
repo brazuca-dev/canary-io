@@ -5,6 +5,7 @@
 README.md
 
 .zed/
+.keys
 .vscode/
 .cursor/
 .localstack/
