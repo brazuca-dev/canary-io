@@ -21,6 +21,4 @@ COPY --from=keys /c2pa/private.key ./features/cdn/files/
 COPY --from=keys /c2pa/chain.pem ./features/cdn/files/
 COPY --from=keys /c2pa/root.pem ./features/cdn/files/
 
-RUN ls -la ./features/cdn/files/
-
 CMD ["run", "-P", "--watch-hmr", "main.ts"]

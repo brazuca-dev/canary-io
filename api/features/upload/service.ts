@@ -5,5 +5,5 @@ export const renameFile = (name: string, lastModified: string, extension: string
     "sha256",
     `${name}${lastModified}`,
   );
-  return `${hashName}/original.${extension}`;
+  return `raw/${hashName}.${extension}`;
 }

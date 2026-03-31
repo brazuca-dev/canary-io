@@ -6,12 +6,12 @@ const view = new Hono();
 
 view.get("/view/:hash", async (c: Context) => {
   const { hash } = c.req.param();
-  const { file = "original", type } = c.req.query()
+  const { file = "raw", type } = c.req.query()
   
-  const key = `${hash}/${file}.${type}`;
+  const key = `${file}/${hash}.${type}`;
   const preSignedUrl = await getPreSignedUrl.toGet({ key });
   
-  return c.html(<ViewAssetUploadedPage assetUrl={preSignedUrl} />);
+  return c.html(<ViewAssetUploadedPage assetUrl={preSignedUrl} type={type} />);
 });
 
 export { view as ViewRoute };

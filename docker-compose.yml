@@ -1,86 +1,109 @@
 services:
-    deno_api:
-        container_name: api
-        build:
-            context: ./
-            dockerfile: api/Dockerfile
-        ports:
-            - "8000:8000"
-        environment:
-            - TZ=America/Sao_Paulo
-            - AWS_REGION=${AWS_REGION}
-            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-            - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT}
-            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-        volumes:
-            - ./api:/api
-            - ./common:/common
-            - /api/features/cdn/files
-            - deno-cache:/deno-dir
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
-        depends_on:
-            - localstack
+  deno_api:
+    container_name: api
+    build:
+      context: ./
+      dockerfile: api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - TZ=America/Sao_Paulo
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+    volumes:
+      - ./api:/api
+      - ./common:/common
+      - /api/features/cdn/files
+      - deno-cache:/deno-dir
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    depends_on:
+      - localstack
 
-    localstack:
-        container_name: aws
-        image: localstack/localstack
-        ports:
-            - "127.0.0.1:4566:4566" # LocalStack Gateway
-            - "127.0.0.1:4510-4559:4510-4559" # external services port range
-        environment:
-            - TZ=America/Sao_Paulo
-            - S3_SKIP_SIGNATURE_VALIDATION=0
-            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-            - AWS_REGION=${AWS_REGION}
-            - ACCOUNT_ID=${ACCOUNT_ID}
-            - SQS_QUEUE_NAME=${SQS_QUEUE_NAME}
-            - LOCALSTACK_CORS_ORIGIN=${LOCALSTACK_CORS_ORIGIN}
-        volumes:
-            - "./scripts/localstack:/etc/localstack/init/ready.d"
-            - "./.ls-data:/var/lib/localstack"
-            - "/var/run/docker.sock:/var/run/docker.sock"
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
+  localstack:
+    container_name: aws
+    image: localstack/localstack
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      timeout: 10s
+      interval: 30s
+      retries: 5
+    ports:
+      - "127.0.0.1:4566:4566" # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559" # external services port range
+    environment:
+      - TZ=America/Sao_Paulo
+      - AWS_REGION=${AWS_REGION}
+      - ACCOUNT_ID=${ACCOUNT_ID}
+      - S3_SKIP_SIGNATURE_VALIDATION=0
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - LOCALSTACK_CORS_ORIGIN=${LOCALSTACK_CORS_ORIGIN}
+      - SQS_OPTIMIZER_QUEUE_NAME=${SQS_OPTIMIZER_QUEUE_NAME}
+      - SQS_CONTENT_AUTH_QUEUE_NAME=${SQS_CONTENT_AUTH_QUEUE_NAME}
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN- }
+    volumes:
+      - "./scripts/localstack:/etc/localstack/init/ready.d"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - "./.ls-data:/var/lib/localstack"
 
-    c2pa_worker:
-        container_name: contentauth
-        restart: always
-        build:
-            context: ./
-            dockerfile: workers/c2pa/Dockerfile
-        environment:
-            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-            - AWS_REGION=${AWS_REGION}
-            - S3_INTERNAL_ENDPOINT=${S3_INTERNAL_ENDPOINT}
-        volumes:
-            - ./workers/c2pa:/worker/c2pa
-            - ./common:/common
-            - deno-cache:/deno_dir
-        depends_on:
-            - deno_api
+  c2pa_worker:
+    container_name: contentauth
+    restart: always
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    build:
+      context: ./
+      dockerfile: workers/c2pa/Dockerfile
+    environment:
+      - DENO_DIR=/deno-dir
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_INTERNAL_ENDPOINT=${S3_INTERNAL_ENDPOINT}
+      - ACCOUNT_ID=${ACCOUNT_ID}
+      - SQS_BASE_URL=${SQS_BASE_URL}
+      - SQS_CONTENT_AUTH_QUEUE_NAME=${SQS_CONTENT_AUTH_QUEUE_NAME}
+    volumes:
+      - ./workers/c2pa:/worker/c2pa
+      - ./common:/common
+      - deno-cache:/deno_dir
+    depends_on:
+      localstack:
+        condition: service_healthy
 
-    optimizer_worker:
-        container_name: optimizer
-        restart: always
-        build:
-            context: ./
-            dockerfile: workers/optimizer/Dockerfile
-        environment:
-            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-            - S3_INTERNAL_ENDPOINT=${S3_INTERNAL_ENDPOINT}
-            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-            - AWS_REGION=${AWS_REGION}
-        volumes:
-            - ./workers/optimizer:/worker/optimizer
-            - ./common:/common
-            - deno-cache:/deno_dir
-        depends_on:
-            - deno_api
+  optimizer_worker:
+    container_name: optimizer
+    restart: always
+    build:
+      context: ./
+      dockerfile: workers/optimizer/Dockerfile
+    environment:
+      - DENO_DIR=/deno-dir
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_INTERNAL_ENDPOINT=${S3_INTERNAL_ENDPOINT}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_REGION=${AWS_REGION}
+      - ACCOUNT_ID=${ACCOUNT_ID}
+      - SQS_BASE_URL=${SQS_BASE_URL}
+      - SQS_OPTIMIZER_QUEUE_NAME=${SQS_OPTIMIZER_QUEUE_NAME}
+      - SQS_NEXT_QUEUE_NAME=${SQS_CONTENT_AUTH_QUEUE_NAME}
+    volumes:
+      - ./workers/optimizer:/worker/optimizer
+      - ./common:/common
+      - deno-cache:/deno_dir
+    depends_on:
+      localstack:
+        condition: service_healthy
 
 volumes:
-    deno-cache:
+  deno-cache:

@@ -5,12 +5,13 @@ document
 
         const formData = new FormData(event.target);
         const photo = formData.get("photo");
+        const type = photo.type.split('/')[1];
 
         const responseOfUploadRequest = await fetch("/upload", {
             method: "post",
             body: JSON.stringify({
                 fileMetaData: {
-                    type: photo.type.split('/')[1],
+                    type,
                     name: photo.name,
                     lastModified: photo.lastModified,
                 },
@@ -30,5 +31,7 @@ document
                 "Failed to upload file:" + responseOfPresignedUrl.status,
             );
         }
-        globalThis.location.href = "/view/" + key;
+      
+        const hash = key.split('/').pop().split('.')[0]
+        globalThis.location.href = `/view/${hash}?file=signed&type=webp`;
     });
