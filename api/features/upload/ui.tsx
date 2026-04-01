@@ -1,5 +1,8 @@
 import { Layout } from "../layout.tsx";
 
+const CDN_UPLOAD_FILES_JAVASCRIPT =
+  `${Deno.env.get("CONTENT_DELIVERY_URL")}/static/upload-files.js` || "";
+
 export const UploadPage = () => (
   <Layout title="Upload Asset">
     <form id="upload-file-form">
@@ -16,7 +19,8 @@ export const UploadPage = () => (
         <br />
         <button type="submit">Submit</button>
       </fieldset>
-      <script defer src="/content/upload-files.js"></script>
+      <script defer src={CDN_UPLOAD_FILES_JAVASCRIPT}></script>
     </form>
   </Layout>
 );
+

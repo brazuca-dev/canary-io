@@ -1,5 +1,17 @@
 services:
-  deno_api:
+  content-delivery:
+    build:
+      context: ./
+      dockerfile: cdn/Dockerfile
+    ports:
+      - "4242:4242"
+    environment:
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  deno-api:
     container_name: api
     build:
       context: ./
@@ -13,6 +25,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - S3_EXTERNAL_ENDPOINT=${S3_EXTERNAL_ENDPOINT}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - CONTENT_DELIVERY_URL={CONTENT_DELIVERY_URL}-http://content-delivery:4242}
     volumes:
       - ./api:/api
       - ./common:/common
@@ -51,7 +64,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - "./.ls-data:/var/lib/localstack"
 
-  c2pa_worker:
+  c2pa-worker:
     container_name: contentauth
     restart: always
     healthcheck:
@@ -72,6 +85,7 @@ services:
       - ACCOUNT_ID=${ACCOUNT_ID}
       - SQS_BASE_URL=${SQS_BASE_URL}
       - SQS_CONTENT_AUTH_QUEUE_NAME=${SQS_CONTENT_AUTH_QUEUE_NAME}
+      - CONTENT_DELIVERY_URL={CONTENT_DELIVERY_URL}-http://content-delivery:4242}
     volumes:
       - ./workers/c2pa:/worker/c2pa
       - ./common:/common
@@ -80,7 +94,7 @@ services:
       localstack:
         condition: service_healthy
 
-  optimizer_worker:
+  optimizer-worker:
     container_name: optimizer
     restart: always
     build:

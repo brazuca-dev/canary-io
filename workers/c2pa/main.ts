@@ -9,8 +9,8 @@ import { Builder, LocalSigner } from "@contentauth/c2pa-node";
 import { Buffer } from "node:buffer";
 
 const [certRes, keyRes] = await Promise.all([
-  fetch("http://deno_api:8000/content/trust-anchor.pem"),
-  fetch("http://deno_api:8000/content/private.key"),
+  fetch(`${Deno.env.get("CDN_URL")}/static/trust-anchor.pem`),
+  fetch(`${Deno.env.get("CDN_URL")}/static/private.key`),
 ]);
 const certBuffer = Buffer.from(await certRes.arrayBuffer());
 const keyBuffer = Buffer.from(await keyRes.arrayBuffer());

@@ -11,7 +11,7 @@ class FileElement extends HTMLElement {
     async checkImageProvenance(imageUrl, type) {
         const c2pa = await createC2pa({
             wasmSrc,
-            trustAnchors: (await fetch("/content/trust-anchor.pem")).text(),
+            trustAnchors: (await fetch("http://localhost:4242/content/trust-anchor.pem")).text(),
             embedCheckNode: true,
         });
 
