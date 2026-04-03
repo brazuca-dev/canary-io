@@ -20,4 +20,4 @@ COPY --from=keys /c2pa/private.key ./static/
 COPY --from=keys /c2pa/chain.pem ./static/
 COPY --from=keys /c2pa/root.pem ./static/
 
-CMD ["deno", "run", "-P", "main.ts"]
+CMD ["run", "-P", "--watch-hmr", "main.ts"]

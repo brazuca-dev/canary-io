@@ -5,7 +5,8 @@ interface ViewAssetUploadedPageProps {
   type: string;
 }
 
-const CDN_FILE_ELEMENT_JS = `${Deno.env.get("CONTENT_DELIVERY_URL")}/content/file-element.js` || "";
+const CDN_FILE_ELEMENT_JS =
+  `${Deno.env.get("CDN_BASE_URL")}/static/file-element.js` || "";
 
 export const ViewAssetUploadedPage = (
   { assetUrl, type }: ViewAssetUploadedPageProps,
@@ -17,9 +18,9 @@ export const ViewAssetUploadedPage = (
       <p>
         View uploaded asset access: <a href={assetUrl}>here</a>
       </p>
-      
+
       <file-element src={assetUrl} type={type} alt="Uploaded Asset" />
-      <script defer src={CDN_FILE_ELEMENT_JS} type="module"></script>
+      <script defer type="module" src={CDN_FILE_ELEMENT_JS}></script>
     </div>
   </Layout>
 );

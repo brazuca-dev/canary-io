@@ -1,7 +1,7 @@
 import { Layout } from "../layout.tsx";
 
 const CDN_UPLOAD_FILES_JAVASCRIPT =
-  `${Deno.env.get("CONTENT_DELIVERY_URL")}/static/upload-files.js` || "";
+  `${Deno.env.get("CDN_BASE_URL")}/static/upload-files.js` || "";
 
 export const UploadPage = () => (
   <Layout title="Upload Asset">
@@ -23,4 +23,3 @@ export const UploadPage = () => (
     </form>
   </Layout>
 );
-

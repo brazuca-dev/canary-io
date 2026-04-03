@@ -1,7 +1,6 @@
 import { s3 } from "@storage";
 import { sqs } from "@queue-message";
 import sharp from "sharp";
-import { S3EventNotification } from "./interfaces.ts";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   DeleteMessageCommand,
@@ -25,7 +24,7 @@ while (true) {
         WaitTimeSeconds: 20,
       }),
     );
-    
+
     if (!queue.Messages || queue.Messages.length === 0) continue;
 
     const lastMessage = queue.Messages[queue.Messages.length - 1];
@@ -39,9 +38,7 @@ while (true) {
       continue;
     }
 
-    const { Records }: S3EventNotification = JSON.parse(
-      lastMessage.Body || "{}",
-    );
+    const { Records } = JSON.parse(lastMessage.Body);
     if (!Records || !Records.length) continue;
 
     const lastRecord = Records[Records.length - 1];
@@ -59,7 +56,7 @@ while (true) {
 
     const imageMetadata = await sharp(imageArrayBuffer).metadata();
     const { width, height } = imageMetadata;
-    
+
     const sizeReductionPer = 0.2;
     const newWidth = Math.trunc(width - (width * sizeReductionPer)) || width;
     const newHeight = Math.trunc(height - (height * sizeReductionPer)) ||

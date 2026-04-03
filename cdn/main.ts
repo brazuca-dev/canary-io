@@ -8,7 +8,13 @@ const handler = (request: Request) => {
   }
 
   if (url.pathname.startsWith("/static")) {
-    return serveDir(request, { fsRoot: "./" });
+    return serveDir(request, {
+      fsRoot: "./",
+      headers: [
+        "Access-Control-Allow-Origin: http://localhost:8000",
+        "Access-Control-Allow-Methods: GET, OPTIONS",
+      ],
+    });
   }
 
   return new Response("Not found", { status: 404 });
