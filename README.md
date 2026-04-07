@@ -80,7 +80,7 @@ O **Canary.io** nasceu para explorar a integridade digital de ativos visuais. O 
 Criado e mantido por **Ítalo (brazuca-dev)**.
 
   * [GitHub](https://github.com/brazuca-dev)
-  * [LinkedIn](www.linkedin.com/in/ítalovasconcelos)
+  * [LinkedIn](https://www.linkedin.com/in/ítalovasconcelos)
 
 -----
 
