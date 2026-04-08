@@ -13,7 +13,7 @@ O **Canary.io** nasceu para explorar a integridade digital de ativos visuais. O 
 1.  Recebimento de uma imagem original.
 2.  Otimização (redução da imagem em 20%) e conversão da imagem original (formato .webp).
 2.  Injeção de um **Manifesto C2PA** (metadados criptográficos).
-3.  Armazenamento em nuvem com pre-signed-url.
+3.  Armazenamento em nuvem.
 4.  Validação e extração desses dados de proveniência no Frontend para o usuário final.
 
 -----
